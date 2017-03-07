@@ -8,7 +8,7 @@
 
 // Most images are too big for 1080p screens, scale them down by this factor
 #define IMG_SCALE_FACTOR 4
-#define WEBCAM 1
+#define WEBCAM 0
 #define LINE_THICKNESS 10
 
 // Runs auto_crop constantly with input from the webcam.
@@ -21,5 +21,8 @@ void auto_test();
 double test_auto_crop(const std::string &path, const cv::Rect &true_boundary, bool display_results);
 // Reads in the true boundaries for use in auto_test
 std::vector<std::array<int, 4>> get_true_boundaries(const std::string &path);
+// Manipulates image to be a subset of the original defined by area
+void crop(cv::Mat &image, const cv::Rect &area);
 
+std::string get_time_str();
 double get_rectangle_overlap(const cv::Rect &lhs, const cv::Rect &rhs);

@@ -1,6 +1,8 @@
 #include <array>
 #include <algorithm>
+#include <ctime>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -42,14 +44,22 @@ void office_lens()
 
 		std::array<int, 4> res = auto_crop(grayscale);
 
-		cv::rectangle(frame, cv::Rect(cv::Point(res[0], res[1]), cv::Point(res[2], res[3])), color, LINE_THICKNESS);
+		cv::Mat frame_with_rect;
+		frame.copyTo(frame_with_rect); // If we save the frame, we don't want the rectangle too.
+		cv::rectangle(frame_with_rect, cv::Rect(cv::Point(res[0], res[1]), cv::Point(res[2], res[3])), color, LINE_THICKNESS);
 
-		cv::imshow("OfficeLens", frame);
+		cv::imshow("OfficeLens", frame_with_rect);
 
 		char key = cv::waitKey(1);
 
 		if (key == 'q')
 			break;
+		else if (key == 's')
+		{
+			// res is originally in the format x1, y1, x2, y2, but we need x, y, width, height.  Convert it
+			crop(frame, cv::Rect(res[0], res[1], res[2] - res[0], res[3] - res[1]));
+			cv::imwrite(get_time_str() + ".png", frame);
+		}
 	}
 }
 
@@ -201,6 +211,24 @@ std::vector<std::array<int, 4>> get_true_boundaries(const std::string &path)
 	}
 
 	return boundaries;
+}
+
+inline
+void crop(cv::Mat &image, const cv::Rect &area)
+{
+	image = image(area);
+}
+
+// Thanks to http://stackoverflow.com/a/16358111
+std::string get_time_str()
+{
+	auto t = std::time(nullptr);
+	auto tm = *std::localtime(&t);
+
+	std::ostringstream oss;
+	oss << std::put_time(&tm, "%d-%m-%Y--%H-%M-%S");
+
+	return oss.str();
 }
 
 double get_rectangle_overlap(const cv::Rect &lhs, const cv::Rect &rhs)
