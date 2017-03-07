@@ -4,7 +4,7 @@ OfficeLensClone is a simpler version of [Microsoft's Office Lens](https://play.g
 
 ### Before
 
-![before](example\before.png)
+![before](example/before.png)
 
 
 
